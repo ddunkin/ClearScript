@@ -421,6 +421,20 @@ namespace Microsoft.ClearScript.V8
             return CompileInternal(documentInfo.MakeUnique(DocumentNameManager), code);
         }
 
+#if NETCOREAPP3_1 || NETSTANDARD2_1
+        /// <summary>
+        /// Creates a compiled script with the specified document meta-information.
+        /// </summary>
+        /// <param name="documentInfo">A structure containing meta-information for the script document.</param>
+        /// <param name="code">The script code to compile, UTF-8 encoded.</param>
+        /// <returns>A compiled script that can be executed by multiple V8 script engine instances.</returns>
+        public V8Script Compile(DocumentInfo documentInfo, ReadOnlySpan<byte> code)
+        {
+            VerifyNotDisposed();
+            return CompileInternal(documentInfo.MakeUnique(DocumentNameManager), code);
+        }
+#endif
+
         /// <summary>
         /// Creates a compiled script, generating cache data for accelerated recompilation.
         /// </summary>
@@ -832,6 +846,23 @@ namespace Microsoft.ClearScript.V8
 
             return proxy.Compile(documentInfo, code);
         }
+
+#if NETCOREAPP3_1 || NETSTANDARD2_1
+        private V8Script CompileInternal(UniqueDocumentInfo documentInfo, ReadOnlySpan<byte> code)
+        {
+            if (FormatCode)
+            {
+                code = MiscHelpers.FormatCode(code);
+            }
+
+            if (documentInfo.Category == ModuleCategory.CommonJS)
+            {
+                code = CommonJSManager.Module.GetAugmentedCode(code);
+            }
+
+            return proxy.Compile(documentInfo, code);
+        }
+#endif
 
         private V8Script CompileInternal(UniqueDocumentInfo documentInfo, string code, V8CacheKind cacheKind, out byte[] cacheBytes)
         {

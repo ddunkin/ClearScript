@@ -838,6 +838,28 @@ NATIVE_ENTRY_POINT(V8ScriptHandle*) V8Isolate_Compile(const V8IsolateHandle& han
 
 //-----------------------------------------------------------------------------
 
+NATIVE_ENTRY_POINT(V8ScriptHandle*) V8Isolate_CompileUtf8(const V8IsolateHandle& handle, StdString&& resourceName, StdString&& sourceMapUrl, uint64_t uniqueId, StdBool isModule, void* pvDocumentInfo, std::vector<uint8_t>& code) noexcept
+{
+    V8DocumentInfo documentInfo(std::move(resourceName), std::move(sourceMapUrl), uniqueId, isModule, pvDocumentInfo);
+
+    auto spIsolate = handle.GetEntity();
+    if (!spIsolate.IsEmpty())
+    {
+        try
+        {
+            return new V8ScriptHandle(spIsolate->Compile(documentInfo, code));
+        }
+        catch (const V8Exception& exception)
+        {
+            exception.ScheduleScriptEngineException();
+        }
+    }
+
+    return nullptr;
+}
+
+//-----------------------------------------------------------------------------
+
 NATIVE_ENTRY_POINT(V8ScriptHandle*) V8Isolate_CompileProducingCache(const V8IsolateHandle& handle, StdString&& resourceName, StdString&& sourceMapUrl, uint64_t uniqueId, StdBool isModule, void* pvDocumentInfo, StdString&& code, V8CacheType cacheType, std::vector<uint8_t>& cacheBytes) noexcept
 {
     cacheBytes.clear();

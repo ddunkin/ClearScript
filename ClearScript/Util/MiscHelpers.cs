@@ -258,6 +258,45 @@ namespace Microsoft.ClearScript.Util
             return digest;
         }
 
+#if NETCOREAPP3_1 || NETSTANDARD2_1
+        public static UIntPtr GetDigest(this ReadOnlySpan<byte> code)
+        {
+            return UIntPtr.Zero;
+            // return (UIntPtr.Size == 4) ? (UIntPtr)code.GetDigestAsUInt32() : (UIntPtr)code.GetDigestAsUInt64();
+        }
+
+        // public static uint GetDigestAsUInt32(this ReadOnlySpan<byte> bytes)
+        // {
+        //     var digest = 2166136261U;
+        //     const uint prime = 16777619U;
+        //
+        //     unchecked
+        //     {
+        //         for (var index = 0; index < bytes.Length; index++)
+        //         {
+        //             digest ^= bytes[index];
+        //             digest *= prime;
+        //         }
+        //     }
+        //
+        //     return digest;
+        // }
+        //
+        // public static ulong GetDigestAsUInt64(this ReadOnlySpan<byte> bytes)
+        // {
+        //     var digest = 14695981039346656037UL;
+        //     const ulong prime = 1099511628211UL;
+        //
+        //     for (var index = 0; index < bytes.Length; index++)
+        //     {
+        //         digest ^= bytes[index];
+        //         digest *= prime;
+        //     }
+        //
+        //     return digest;
+        // }
+#endif
+
         public static IEnumerable<string> SplitSearchPath(this string searchPath)
         {
             return searchPath.Split(searchPathSeparators, StringSplitOptions.RemoveEmptyEntries).Distinct(StringComparer.OrdinalIgnoreCase);

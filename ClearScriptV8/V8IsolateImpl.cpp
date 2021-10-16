@@ -693,6 +693,18 @@ V8ScriptHolder* V8IsolateImpl::Compile(const V8DocumentInfo& documentInfo, StdSt
 
 //-----------------------------------------------------------------------------
 
+V8ScriptHolder* V8IsolateImpl::Compile(const V8DocumentInfo& documentInfo, std::vector<uint8_t>& code)
+{
+    BEGIN_ISOLATE_SCOPE
+
+        SharedPtr<V8ContextImpl> spContextImpl((m_ContextEntries.size() > 0) ? m_ContextEntries.front().pContextImpl : new V8ContextImpl(this, m_Name));
+        return spContextImpl->Compile(documentInfo, code);
+
+    END_ISOLATE_SCOPE
+}
+
+//-----------------------------------------------------------------------------
+
 V8ScriptHolder* V8IsolateImpl::Compile(const V8DocumentInfo& documentInfo, StdString&& code, V8CacheType cacheType, std::vector<uint8_t>& cacheBytes)
 {
     BEGIN_ISOLATE_SCOPE

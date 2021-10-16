@@ -227,6 +227,11 @@ public:
         return value.ToV8String(m_upIsolate.get(), type);
     }
 
+    v8::MaybeLocal<v8::String> CreateString(const std::vector<uint8_t>& value, v8::NewStringType type = v8::NewStringType::kNormal)
+    {
+        return v8::String::NewFromUtf8(m_upIsolate.get(), reinterpret_cast<const char*>(value.data()), type, value.size());
+    }
+
     virtual StdString CreateStdString(v8::Local<v8::Value> hValue) override
     {
         return StdString(m_upIsolate.get(), hValue);
@@ -448,6 +453,7 @@ public:
 
     virtual void AwaitDebuggerAndPause() override;
     virtual V8ScriptHolder* Compile(const V8DocumentInfo& documentInfo, StdString&& code) override;
+    virtual V8ScriptHolder* Compile(const V8DocumentInfo& documentInfo, std::vector<uint8_t>& code) override;
     virtual V8ScriptHolder* Compile(const V8DocumentInfo& documentInfo, StdString&& code, V8CacheType cacheType, std::vector<uint8_t>& cacheBytes) override;
     virtual V8ScriptHolder* Compile(const V8DocumentInfo& documentInfo, StdString&& code, V8CacheType cacheType, const std::vector<uint8_t>& cacheBytes, bool& cacheAccepted) override;
     virtual void GetHeapStatistics(v8::HeapStatistics& heapStatistics) override;

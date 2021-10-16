@@ -24,6 +24,10 @@ namespace Microsoft.ClearScript.V8
 
         public abstract V8Script Compile(UniqueDocumentInfo documentInfo, string code);
 
+#if NETCOREAPP3_1 || NETSTANDARD2_1
+        public abstract V8Script Compile(UniqueDocumentInfo documentInfo, ReadOnlySpan<byte> code);
+#endif
+
         public abstract V8Script Compile(UniqueDocumentInfo documentInfo, string code, V8CacheKind cacheKind, out byte[] cacheBytes);
 
         public abstract V8Script Compile(UniqueDocumentInfo documentInfo, string code, V8CacheKind cacheKind, byte[] cacheBytes, out bool cacheAccepted);

@@ -589,6 +589,65 @@ V8ScriptHolder* V8ContextImpl::Compile(const V8DocumentInfo& documentInfo, StdSt
 
 //-----------------------------------------------------------------------------
 
+V8ScriptHolder* V8ContextImpl::Compile(const V8DocumentInfo& documentInfo, std::vector<uint8_t>& code)
+{
+    BEGIN_CONTEXT_SCOPE
+    BEGIN_DOCUMENT_SCOPE(documentInfo)
+    BEGIN_EXECUTION_SCOPE
+    FROM_MAYBE_TRY
+
+        size_t codeDigest = 0; // code.GetDigest();
+        v8::ScriptCompiler::Source source(FROM_MAYBE(CreateString(code)), CreateScriptOrigin(documentInfo));
+        std::unique_ptr<V8ScriptHolder> upScriptHolder;
+
+        if (documentInfo.IsModule())
+        {
+            // TODO
+//             auto hModule = GetCachedModule(documentInfo.GetUniqueId(), codeDigest);
+//             if (hModule.IsEmpty())
+//             {
+//                 hModule = VERIFY_MAYBE(CompileModule(&source));
+//                 if (hModule.IsEmpty())
+//                 {
+//                     throw V8Exception(V8Exception::Type::General, m_Name, StdString(SL("Module compilation failed; no additional information was provided by the V8 runtime")), false /*executionStarted*/);
+//                 }
+// 
+//                 CacheModule(documentInfo, codeDigest, hModule);
+//             }
+// 
+//             upScriptHolder.reset(new V8ScriptHolderImpl(GetWeakBinding(), ::PtrFromHandle(CreatePersistent(hModule)), documentInfo, codeDigest, code));
+        }
+        else
+        {
+            auto hScript = GetCachedScript(documentInfo.GetUniqueId(), codeDigest);
+            if (hScript.IsEmpty())
+            {
+                hScript = VERIFY_MAYBE(CompileUnboundScript(&source));
+                if (hScript.IsEmpty())
+                {
+                    throw V8Exception(V8Exception::Type::General, m_Name, StdString(SL("Script compilation failed; no additional information was provided by the V8 runtime")), false /*executionStarted*/);
+                }
+
+                CacheScript(documentInfo, codeDigest, hScript);
+            }
+
+            upScriptHolder.reset(new V8ScriptHolderImpl(GetWeakBinding(), ::PtrFromHandle(CreatePersistent(hScript)), documentInfo, codeDigest));
+        }
+
+        return upScriptHolder.release();
+
+    FROM_MAYBE_CATCH
+
+        throw V8Exception(V8Exception::Type::General, m_Name, StdString(SL("The V8 runtime cannot perform the requested operation because a script exception is pending")), EXECUTION_STARTED);
+
+    FROM_MAYBE_END
+    END_EXECUTION_SCOPE
+    END_DOCUMENT_SCOPE
+    END_CONTEXT_SCOPE
+}
+
+//-----------------------------------------------------------------------------
+
 V8ScriptHolder* V8ContextImpl::Compile(const V8DocumentInfo& documentInfo, StdString&& code, V8CacheType cacheType, std::vector<uint8_t>& cacheBytes)
 {
     if (cacheType == V8CacheType::None)

@@ -66,6 +66,7 @@ public:
 
     virtual void AwaitDebuggerAndPause() = 0;
     virtual V8ScriptHolder* Compile(const V8DocumentInfo& documentInfo, StdString&& code) = 0;
+    virtual V8ScriptHolder* Compile(const V8DocumentInfo& documentInfo, std::vector<uint8_t>& code) = 0;
     virtual V8ScriptHolder* Compile(const V8DocumentInfo& documentInfo, StdString&& code, V8CacheType cacheType, std::vector<uint8_t>& cacheBytes) = 0;
     virtual V8ScriptHolder* Compile(const V8DocumentInfo& documentInfo, StdString&& code, V8CacheType cacheType, const std::vector<uint8_t>& cacheBytes, bool& cacheAccepted) = 0;
     virtual void GetHeapStatistics(v8::HeapStatistics& heapStatistics) = 0;

@@ -82,6 +82,21 @@ namespace Microsoft.ClearScript.V8.SplitProxy
             )));
         }
 
+#if NETCOREAPP3_1 || NETSTANDARD2_1
+        public override V8.V8Script Compile(UniqueDocumentInfo documentInfo, ReadOnlySpan<byte> code)
+        {
+            return new V8ScriptImpl(documentInfo, code.GetDigest(), V8SplitProxyNative.Invoke(instance => instance.V8Isolate_CompileUtf8(
+                Handle,
+                MiscHelpers.GetUrlOrPath(documentInfo.Uri, documentInfo.UniqueName),
+                MiscHelpers.GetUrlOrPath(documentInfo.SourceMapUri, string.Empty),
+                documentInfo.UniqueId,
+                documentInfo.Category == ModuleCategory.Standard,
+                V8ProxyHelpers.AddRefHostObject(documentInfo),
+                code
+            )));
+        }
+#endif
+
         public override V8.V8Script Compile(UniqueDocumentInfo documentInfo, string code, V8CacheKind cacheKind, out byte[] cacheBytes)
         {
             if (cacheKind == V8CacheKind.None)

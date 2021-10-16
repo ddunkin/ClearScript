@@ -137,6 +137,9 @@ namespace Microsoft.ClearScript.V8.SplitProxy
         void V8Isolate_SetMaxStackUsage(V8Isolate.Handle hIsolate, UIntPtr size);
         void V8Isolate_AwaitDebuggerAndPause(V8Isolate.Handle hIsolate);
         V8Script.Handle V8Isolate_Compile(V8Isolate.Handle hIsolate, string resourceName, string sourceMapUrl, ulong uniqueId, bool isModule, IntPtr pDocumentInfo, string code);
+#if NETCOREAPP3_1 || NETSTANDARD2_1
+        V8Script.Handle V8Isolate_CompileUtf8(V8Isolate.Handle hIsolate, string resourceName, string sourceMapUrl, ulong uniqueId, bool isModule, IntPtr pDocumentInfo, ReadOnlySpan<byte> code);
+    #endif
         V8Script.Handle V8Isolate_CompileProducingCache(V8Isolate.Handle hIsolate, string resourceName, string sourceMapUrl, ulong uniqueId, bool isModule, IntPtr pDocumentInfo, string code, V8CacheKind cacheKind, out byte[] cacheBytes);
         V8Script.Handle V8Isolate_CompileConsumingCache(V8Isolate.Handle hIsolate, string resourceName, string sourceMapUrl, ulong uniqueId, bool isModule, IntPtr pDocumentInfo, string code, V8CacheKind cacheKind, byte[] cacheBytes, out bool cacheAccepted);
         void V8Isolate_GetHeapStatistics(V8Isolate.Handle hIsolate, out ulong totalHeapSize, out ulong totalHeapSizeExecutable, out ulong totalPhysicalSize, out ulong usedHeapSize, out ulong heapSizeLimit);

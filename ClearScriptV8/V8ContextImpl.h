@@ -43,6 +43,7 @@ public:
     virtual V8Value Execute(const V8DocumentInfo& documentInfo, const StdString& code, bool evaluate) override;
 
     virtual V8ScriptHolder* Compile(const V8DocumentInfo& documentInfo, StdString&& code) override;
+    virtual V8ScriptHolder* Compile(const V8DocumentInfo& documentInfo, std::vector<uint8_t>& code) override;
     virtual V8ScriptHolder* Compile(const V8DocumentInfo& documentInfo, StdString&& code, V8CacheType cacheType, std::vector<uint8_t>& cacheBytes) override;
     virtual V8ScriptHolder* Compile(const V8DocumentInfo& documentInfo, StdString&& code, V8CacheType cacheType, const std::vector<uint8_t>& cacheBytes, bool& cacheAccepted) override;
     virtual bool CanExecute(const SharedPtr<V8ScriptHolder>& spHolder) override;
@@ -183,6 +184,11 @@ private:
     }
 
     v8::MaybeLocal<v8::String> CreateString(const StdString& value, v8::NewStringType type = v8::NewStringType::kNormal)
+    {
+        return m_spIsolateImpl->CreateString(value, type);
+    }
+
+    v8::MaybeLocal<v8::String> CreateString(const std::vector<uint8_t>& value, v8::NewStringType type = v8::NewStringType::kNormal)
     {
         return m_spIsolateImpl->CreateString(value, type);
     }
